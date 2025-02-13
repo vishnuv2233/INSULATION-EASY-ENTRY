@@ -1,0 +1,154 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
+
+export default function EntryApp() {
+  const [formData, setFormData] = useState({
+    material: "",
+    date: "",
+    workOrder: "",
+    permitNo: "",
+    description: "",
+    area: "",
+    equipment: "",
+    insType: "",
+    pipeSize: "",
+    insThickness: "",
+    uom: "",
+    unit: "",
+    valve: "",
+  });
+
+  const [measurementData, setMeasurementData] = useState([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    if (formData.material === "NEWM") {
+      const descriptions = [
+        "Insulation Fix back",
+        "Insulation RW Material",
+        "Cladding material 0.8mm",
+        "Self-tapping screws 1000 piece kit",
+        "Sealant tube (standard size)",
+      ];
+
+      const newEntries = descriptions.map((desc, index) => ({
+        ...formData,
+        description: desc,
+        id: measurementData.length + index + 1,
+      }));
+
+      setMeasurementData((prev) => [...prev, ...newEntries]);
+    } else {
+      setMeasurementData((prev) => [...prev, { ...formData, id: prev.length + 1 }]);
+    }
+    setFormData({
+      material: "",
+      date: "",
+      workOrder: "",
+      permitNo: "",
+      description: "",
+      area: "",
+      equipment: "",
+      insType: "",
+      pipeSize: "",
+      insThickness: "",
+      uom: "",
+      unit: "",
+      valve: "",
+    });
+  };
+
+  return (
+    <div className="p-6">
+      <Card className="p-4">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-4">Entry Form</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <select name="material" value={formData.material} onChange={handleChange} className="border p-2 rounded">
+              <option value="">Select Material</option>
+              <option value="OLDM">OLDM</option>
+              <option value="NEWM">NEWM</option>
+            </select>
+            <select name="description" value={formData.description} onChange={handleChange} className="border p-2 rounded">
+              <option value="">Select Description</option>
+              <option value="Insulation removal">Insulation removal</option>
+              <option value="Insulation Fix back">Insulation Fix back</option>
+            </select>
+            <select name="insType" value={formData.insType} onChange={handleChange} className="border p-2 rounded">
+              <option value="">Select Ins Type</option>
+              <option value="HC">HC</option>
+              <option value="IC">IC</option>
+            </select>
+            <select name="uom" value={formData.uom} onChange={handleChange} className="border p-2 rounded">
+              <option value="">Select UoM</option>
+              <option value="M">M</option>
+              <option value="M2">M2</option>
+              <option value="EA">EA</option>
+            </select>
+            {Object.keys(formData).filter(key => !["material", "description", "insType", "uom"].includes(key)).map((key) => (
+              <input
+                key={key}
+                name={key}
+                value={formData[key]}
+                onChange={handleChange}
+                placeholder={key.replace(/([A-Z])/g, " $1").trim()}
+                className="border p-2 rounded"
+              />
+            ))}
+          </div>
+          <Button className="mt-4" onClick={handleSubmit}>CREATE</Button>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-4">Measurement Data</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableCell>Sl No</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Work Order</TableCell>
+                <TableCell>Permit No</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Area</TableCell>
+                <TableCell>Equipment</TableCell>
+                <TableCell>Ins. Type</TableCell>
+                <TableCell>Pipe Size (inch)</TableCell>
+                <TableCell>Ins. Thickness</TableCell>
+                <TableCell>UoM</TableCell>
+                <TableCell>Unit (mtr/m2)</TableCell>
+                <TableCell>Valve</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {measurementData.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.date}</TableCell>
+                  <TableCell>{item.workOrder}</TableCell>
+                  <TableCell>{item.permitNo}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>{item.area}</TableCell>
+                  <TableCell>{item.equipment}</TableCell>
+                  <TableCell>{item.insType}</TableCell>
+                  <TableCell>{item.pipeSize}</TableCell>
+                  <TableCell>{item.insThickness}</TableCell>
+                  <TableCell>{item.uom}</TableCell>
+                  <TableCell>{item.unit}</TableCell>
+                  <TableCell>{item.valve}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
